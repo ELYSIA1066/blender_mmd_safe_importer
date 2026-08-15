@@ -1,0 +1,33 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Blender local and backup files
+*.blend
+*.blend1
+*.blend2
+*.blend@
+
+# Release output
+dist/
+*.zip
+
+# Test and editor caches
+.pytest_cache/
+.coverage
+.vscode/
+.idea/
+
+# Third-party model, motion, and scene assets must never be committed
+*.pmx
+*.pmd
+*.vmd
+*.vpd
+*.fbx
+*.obj
+*.dae
+*.vrm
+
+# Operating system files
+.DS_Store
+Thumbs.db
