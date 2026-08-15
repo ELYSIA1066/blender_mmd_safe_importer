@@ -171,8 +171,8 @@ def _load_suite(pmx_path: Path | None) -> unittest.TestSuite:
 
 
 def main() -> int:
-    if bpy.app.version < (4, 2, 0):
-        print("FAIL: Blender 4.2 or newer is required")
+    if bpy.app.version < (4, 2, 9):
+        print("FAIL: Blender 4.2.9 LTS or newer is required")
         return 2
     if not hasattr(bpy.types.Scene, "mmd_safe_import_report"):
         mmd_safe_importer.register()

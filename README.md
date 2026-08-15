@@ -1,12 +1,14 @@
 # MMD Safe Importer
 
-A standalone Blender 4.2+ extension that wraps the installed `mmd_tools` PMX/PMD importer.
+A standalone Blender extension, verified only with Blender 4.2.9 LTS, that wraps the installed `mmd_tools` PMX/PMD importer.
+
+> **Compatibility notice:** This release is supported only on Blender 4.2.9 LTS. Other Blender versions, including newer releases, have not been verified and may not install or work correctly.
 
 ## Download and install
 
 1. On this repository's **Releases** page, download `mmd_safe_importer-<version>.zip`.
    Do **not** use GitHub's automatically generated **Source code** ZIP as the Blender install package.
-2. In Blender 4.2 or newer, install and enable the official **mmd_tools** extension.
+2. In **Blender 4.2.9 LTS**, install and enable the official **mmd_tools** extension.
 3. Open **Edit > Preferences > Get Extensions**, use the menu in the upper-right corner, then choose **Install from Disk**.
 4. Select the downloaded `mmd_safe_importer-<version>.zip`, then enable **MMD Safe Importer**.
 5. Import through **File > Import > Safe PMX/PMD (.pmx, .pmd)**.
@@ -21,7 +23,7 @@ This extension validates those socket contracts, builds replacements when needed
 
 ## Requirements and limits
 
-- Blender 4.2 or newer.
+- **Verified Blender version:** Blender 4.2.9 LTS only. Other versions, including newer releases, are unverified and may not install or work correctly.
 - The official `mmd_tools` extension must be installed and enabled. This extension does not bundle or modify it.
 - Only the known `MMDShaderDev` and `MMDTexUV` node-group problems are repaired.
 - Import validation checks the created hierarchy. It does not guarantee every model's final material appearance, physics, weight deformation, or animation behavior.
@@ -57,6 +59,10 @@ A separate real-PMX regression is available for locally licensed models only; no
 ## Model assets
 
 Do not bundle or redistribute third-party PMX/PMD/VMD/VPD assets unless their licenses explicitly permit it. This project contains no model asset.
+
+## AI authorship
+
+This project’s source code, documentation, and release materials were generated entirely by AI. This disclosure does not replace or alter the [GPL-3.0-or-later](LICENSE) license.
 
 ## License
 
