@@ -2,7 +2,7 @@
 
 A standalone Blender extension, verified only with Blender 4.2.9 LTS, that wraps the installed `mmd_tools` PMX/PMD importer.
 
-> **Compatibility notice:** This release is supported only on Blender 4.2.9 LTS. Other Blender versions, including newer releases, have not been verified and may not install or work correctly.
+> **Compatibility notice:** This release was verified only with Blender 4.2.9 LTS. Other Blender versions, including newer releases, have not been verified and may not install or work correctly.
 
 ## Download and install
 

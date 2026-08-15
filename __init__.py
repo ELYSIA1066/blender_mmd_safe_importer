@@ -3,7 +3,7 @@
 bl_info = {
     "name": "MMD Safe Importer",
     "author": "Local",
-    "version": (0, 1, 1),
+    "version": (0, 1, 2),
     "blender": (4, 2, 9),
     "location": "File > Import > Safe PMX/PMD",
     "description": "Repairs known mmd_tools node-group failures and validates PMX imports",

@@ -1,10 +1,9 @@
 schema_version = "1.0.0"
 id = "mmd_safe_importer"
-version = "0.1.1"
+version = "0.1.2"
 name = "MMD Safe Importer"
 tagline = "Transactional PMX/PMD import repair wrapper for mmd_tools"
 maintainer = "Local"
 type = "add-on"
 blender_version_min = "4.2.9"
-blender_version_max = "4.2.9"
 license = ["SPDX:GPL-3.0-or-later"]
