@@ -1,4 +1,4 @@
-"""Thin, defensive bridge to the optional mmd_tools import operator."""
+"""Thin, defensive bridge to Blender's official mmd_tools import operator."""
 
 from __future__ import annotations
 

@@ -64,7 +64,7 @@ class RealPmxRepairRegression(unittest.TestCase):
         if not self.pmx_path.is_file():
             self.fail(f"PMX file does not exist: {self.pmx_path}")
         if not availability.import_operator_available():
-            self.fail("mmd_tools.import_model is not available")
+            self.fail("official Blender Extensions mmd_tools.import_model is not available")
 
         self.original_scene = bpy.context.window.scene
         self.original_active = bpy.context.view_layer.objects.active

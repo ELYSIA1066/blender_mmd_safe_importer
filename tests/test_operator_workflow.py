@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 import unittest
+from unittest import mock
 
 import bpy
 
-from mmd_safe_importer import importer_bridge, operators
+from mmd_safe_importer import availability, importer_bridge, operators
 from mmd_safe_importer.importer_bridge import ImportResult
 
 
@@ -57,8 +58,10 @@ class OperatorWorkflowTests(unittest.TestCase):
             return ImportResult(True, result={"FINISHED"})
 
         importer_bridge.import_model = simulated_import
+
         operator = _OperatorStub()
-        result = operators.MMD_SAFE_IMPORT_OT_model.execute(operator, bpy.context)
+        with mock.patch.object(availability, "mmd_runtime_available", return_value=True):
+            result = operators.MMD_SAFE_IMPORT_OT_model.execute(operator, bpy.context)
 
         self.assertEqual(result, {"CANCELLED"})
         self.assertIsNone(bpy.data.meshes.get(created_name))

@@ -46,11 +46,11 @@ class MMD_SAFE_IMPORT_OT_model(bpy.types.Operator, ImportHelper):
 
     @classmethod
     def poll(cls, context):
-        return availability.import_operator_available()
+        return availability.mmd_runtime_available()
 
     def execute(self, context):
         diagnostics = Diagnostics()
-        if not availability.import_operator_available():
+        if not availability.mmd_runtime_available():
             diagnostics.error(availability.dependency_message())
             _publish(context, diagnostics)
             self.report({"ERROR"}, availability.dependency_message())

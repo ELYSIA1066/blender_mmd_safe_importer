@@ -26,6 +26,43 @@ def _descendants(root: bpy.types.Object) -> list[bpy.types.Object]:
     return [root, *root.children_recursive]
 
 
+def _required_socket_names(group: bpy.types.NodeTree, in_out: str) -> set[str]:
+    names: set[str] = set()
+    interface = getattr(group, "interface", None)
+    if interface is not None:
+        for item in interface.items_tree:
+            if getattr(item, "item_type", None) == "SOCKET" and item.in_out == in_out:
+                names.add(item.name)
+    return names
+
+
+def _validate_group_node_contract(
+    node,
+    group_name: str,
+    diagnostics: Diagnostics,
+    inputs=(),
+    outputs=(),
+) -> None:
+    if node is None:
+        diagnostics.warning(f"Material is missing expected '{group_name}' group node.")
+        return
+    if node.node_tree is None:
+        diagnostics.error(f"Material '{node.id_data.name}' has '{node.name}' without a node tree.")
+        return
+    missing_inputs = set(inputs) - {socket.name for socket in node.inputs}
+    missing_outputs = set(outputs) - {socket.name for socket in node.outputs}
+    if missing_inputs:
+        diagnostics.error(
+            f"Material '{node.id_data.name}' '{node.name}' is missing inputs: "
+            + ", ".join(sorted(missing_inputs))
+        )
+    if missing_outputs:
+        diagnostics.error(
+            f"Material '{node.id_data.name}' '{node.name}' is missing outputs: "
+            + ", ".join(sorted(missing_outputs))
+        )
+
+
 def _validate_material(material: bpy.types.Material, diagnostics: Diagnostics) -> None:
     if not material.use_nodes or material.node_tree is None:
         diagnostics.warning(f"Material '{material.name}' does not use nodes.")
@@ -36,11 +73,39 @@ def _validate_material(material: bpy.types.Material, diagnostics: Diagnostics) -
         if node.bl_idname == "ShaderNodeGroup" and node.name in {"mmd_shader", "mmd_tex_uv"}
     }
     shader = groups.get("mmd_shader")
-    if shader is not None and shader.node_tree is not bpy.data.node_groups.get(MMD_SHADER_DEV):
-        diagnostics.warning(f"Material '{material.name}' has a non-canonical mmd_shader node group.")
     tex_uv = groups.get("mmd_tex_uv")
-    if tex_uv is not None and tex_uv.node_tree is not bpy.data.node_groups.get(MMD_TEX_UV):
+    if shader is None:
+        diagnostics.warning(f"Material '{material.name}' is missing its mmd_shader node.")
+    elif shader.node_tree is not bpy.data.node_groups.get(MMD_SHADER_DEV):
+        diagnostics.warning(f"Material '{material.name}' has a non-canonical mmd_shader node group.")
+    _validate_group_node_contract(
+        shader,
+        MMD_SHADER_DEV,
+        diagnostics=diagnostics,
+        inputs=_required_socket_names(bpy.data.node_groups[MMD_SHADER_DEV], "INPUT")
+        if bpy.data.node_groups.get(MMD_SHADER_DEV) is not None
+        else (),
+        outputs=("Shader", "Color", "Alpha"),
+    )
+    if shader is not None:
+        if not any(socket.is_linked for socket in shader.outputs if socket.name in {"Shader", "Color", "Alpha"}):
+            diagnostics.warning(f"Material '{material.name}' mmd_shader has no linked Shader, Color, or Alpha output.")
+
+    if tex_uv is None:
+        diagnostics.warning(f"Material '{material.name}' is missing its mmd_tex_uv node.")
+    elif tex_uv.node_tree is not bpy.data.node_groups.get(MMD_TEX_UV):
         diagnostics.warning(f"Material '{material.name}' has a non-canonical mmd_tex_uv node group.")
+    _validate_group_node_contract(
+        tex_uv,
+        MMD_TEX_UV,
+        diagnostics=diagnostics,
+        outputs=_required_socket_names(bpy.data.node_groups[MMD_TEX_UV], "OUTPUT")
+        if bpy.data.node_groups.get(MMD_TEX_UV) is not None
+        else (),
+    )
+    if tex_uv is not None and any(node.bl_idname == "ShaderNodeTexImage" for node in material.node_tree.nodes):
+        if not any(socket.is_linked for socket in tex_uv.outputs):
+            diagnostics.warning(f"Material '{material.name}' has textures but no linked mmd_tex_uv output.")
 
 
 def _validate_root(root: bpy.types.Object, diagnostics: Diagnostics) -> None:

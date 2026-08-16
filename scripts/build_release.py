@@ -12,6 +12,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = PROJECT_ROOT / "blender_manifest.toml"
 DIST_DIR = PROJECT_ROOT / "dist"
 
+ARCHIVE_ROOT = "mmd_safe_importer"
 RELEASE_FILES = (
     "__init__.py",
     "availability.py",
@@ -53,14 +54,16 @@ def validate_archive(archive_path: Path) -> None:
     with ZipFile(archive_path) as archive:
         names = tuple(archive.namelist())
 
-    if set(names) != set(RELEASE_FILES):
+    expected_names = {f"{ARCHIVE_ROOT}/{name}" for name in RELEASE_FILES}
+    if set(names) != expected_names:
         raise RuntimeError("Release archive contents differ from the approved allowlist.")
 
     for name in names:
         normalized = name.replace("\\", "/")
-        if "/" in normalized:
-            raise RuntimeError(f"Release archive contains nested path: {name}")
-        if normalized.startswith(FORBIDDEN_PARTS) or normalized.endswith(FORBIDDEN_SUFFIXES):
+        if not normalized.startswith(f"{ARCHIVE_ROOT}/") or normalized.count("/") != 1:
+            raise RuntimeError(f"Release archive contains unexpected path: {name}")
+        relative_name = normalized.removeprefix(f"{ARCHIVE_ROOT}/")
+        if relative_name.startswith(FORBIDDEN_PARTS) or relative_name.endswith(FORBIDDEN_SUFFIXES):
             raise RuntimeError(f"Release archive contains forbidden file: {name}")
 
 
@@ -75,7 +78,7 @@ def main() -> int:
 
     with ZipFile(archive_path, "w", compression=ZIP_DEFLATED) as archive:
         for name in RELEASE_FILES:
-            archive.write(PROJECT_ROOT / name, arcname=name)
+            archive.write(PROJECT_ROOT / name, arcname=f"{ARCHIVE_ROOT}/{name}")
 
     try:
         validate_archive(archive_path)
